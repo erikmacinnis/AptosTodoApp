@@ -9,16 +9,20 @@ module 0xe84f70f5bc7be9ced87eff4e346d4b0b641a3963da5d8be7739a008ebbeab89b::Todo 
     // Key:  Allows the resource stored under address to be identified by the address
     // Drop: Allows this resource to be dropped (maybe I'll add option to remove the Task)
     // Allows resource to be moved arround
+    //:!:>resource
     struct Task has key, drop, store {
         id: u64,
         content: string::String,
         completed: bool,
     }
+    //:!:>resource
 
+    //:!:>resource
     struct Todo has key {
         count: u64,
         tasks: vector<Task>,
     }
+    //:!:>resource
 
     public entry fun initialize(account: &signer) {
         // move_to: Creates a new resource for a specific type
@@ -46,7 +50,7 @@ module 0xe84f70f5bc7be9ced87eff4e346d4b0b641a3963da5d8be7739a008ebbeab89b::Todo 
     }
 
     // acquires is required because we are mutating the Todo resource
-    public fun create_task(account: &signer, content: string::String) acquires Todo {
+    public entry fun create_task(account: &signer, content: string::String) acquires Todo {
         // getting mutable reference to Todo that is stored add address from account
         let todo = borrow_global_mut<Todo>(signer::address_of(account));
         // incrementing the count
@@ -66,7 +70,7 @@ module 0xe84f70f5bc7be9ced87eff4e346d4b0b641a3963da5d8be7739a008ebbeab89b::Todo 
         });
     }
 
-    public fun check_task(account: &signer, index: u64) acquires Todo {
+    public entry fun check_task(account: &signer, index: u64) acquires Todo {
         // getting mutable reference to Todo that is stored add address from account
         let todo = borrow_global_mut<Todo>(signer::address_of(account));
         // Getting reference to task at 
