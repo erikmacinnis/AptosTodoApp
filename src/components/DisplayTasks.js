@@ -33,8 +33,11 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
             try {
                 const response = await signAndSubmitTransaction(transaction);
                 await aptos.waitForTransaction({transactionHash:response.hash});
+                createFormattedTaskList();
+                setLoading(false);
             } catch(err) {
                 document.getElementById(id.toString()).checked = false;
+                createFormattedTaskList();
                 setLoading(false);
             }
         }
@@ -73,6 +76,32 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         setTasks(initialTasks);
     }
 
+    const taskColumn = (task) => {
+        let taskClassName = "ui toggle checked checkbox";
+        if (task.completed) {
+            taskClassName = "ui read-only toggle checked checkbox"
+        }
+        return <Grid.Column textAlign='center'>
+            <div style={{width: "100%"}} className="ui left floated compact segment">
+                <div className={taskClassName}>
+                    <input
+                    type="checkbox"
+                    id={task.id.toString()}
+                    name={task.id.toString()}
+                    onClick={(event) => {
+                        if (event.target.checked) {
+                            checkTask(event.target.name)
+                        } else {
+                            event.target.checked = true
+                        }
+                    }}
+                    ></input>
+                    <label>{task.content}</label>
+                </div>
+            </div>
+        </Grid.Column>
+    }
+
     // Creates the list of rows for the grid
     const createFormattedTaskList = () => {
 
@@ -84,45 +113,9 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         for (i = 3; i < length; i += 3){
             let taskRow = (
                 <Grid.Row key={i / 3}>
-                    <Grid.Column textAlign='center'>
-                        <div style={{width: "100%"}} className="ui left floated compact segment">
-                            <div className="ui toggle checked checkbox">
-                                <input
-                                type="checkbox"
-                                id={tasks[i-2].id.toString()}
-                                name={tasks[i-2].id.toString()}
-                                onClick={(event) => checkTask(event.target.name)}
-                                ></input>
-                                <label>{tasks[i-2].content}</label>
-                            </div>
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column key={i-1} textAlign='center'>
-                        <div style={{width: "100%"}} className="ui left floated compact segment">
-                            <div  className="ui toggle checked checkbox">
-                                <input
-                                type="checkbox"
-                                id={tasks[i-1].id.toString()}
-                                name={tasks[i-1].id.toString()}
-                                onClick={(event) => checkTask(event.target.name)}
-                                ></input>
-                                <label>{tasks[i-1].content}</label>
-                            </div>
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column key={i} textAlign='center'>
-                        <div style={{width: "100%"}} className="ui left floated compact segment">
-                            <div className="ui toggle checked checkbox">
-                                <input
-                                type="checkbox"
-                                id={tasks[i].id.toString()}
-                                name={tasks[i].id.toString()}
-                                onClick={(event) => checkTask(event.target.name)}
-                                ></input>
-                                <label>{tasks[i].content}</label>
-                            </div>
-                        </div>
-                    </Grid.Column>
+                    {taskColumn(tasks[i-2])}
+                    {taskColumn(tasks[i-1])}
+                    {taskColumn(tasks[i])}
                 </Grid.Row>
                )
             taskRows.push(taskRow);
@@ -131,19 +124,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
            if (mod === 1){
                 let taskRow = (
                    <Grid.Row key={i / 3}>
-                       <Grid.Column key={length - 1}textAlign='center'>
-                           <div style={{width: "100%"}} className="ui left floated compact segment">
-                               <div className="ui toggle checked checkbox">
-                                   <input
-                                   type="checkbox"
-                                   name={tasks[length - 1].id}
-                                   onClick={() => {
-                                    checkTask(tasks[length - 1].id)}}
-                                   ></input>
-                                   <label>{tasks[length - 1].content}</label>
-                               </div>
-                           </div>
-                       </Grid.Column>
+                    {taskColumn(tasks[length - 1])}
                    </Grid.Row>
                )
                taskRows.push(taskRow);
@@ -151,30 +132,8 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
            else {
                 let taskRow = (
                    <Grid.Row key={i / 3}>
-                       <Grid.Column key={length-2} textAlign='center'>
-                           <div style={{width: "100%"}} className="ui left floated compact segment">
-                               <div className="ui toggle checked checkbox">
-                                   <input
-                                   type="checkbox"
-                                   name={tasks[length - 2].id}
-                                   onClick={() => checkTask(tasks[length - 2].id)}
-                                   ></input>
-                                   <label>{tasks[length - 2].content}</label>
-                               </div>
-                           </div>
-                       </Grid.Column>
-                       <Grid.Column key={length-1} textAlign='center'>
-                           <div style={{width: "100%"}} className="ui left floated compact segment">
-                               <div className="ui toggle checked checkbox">
-                                   <input
-                                   type="checkbox"
-                                   name={tasks[length - 1].id}
-                                   onClick={() => checkTask(tasks[length - 1].id)}
-                                   ></input>
-                                   <label>{tasks[length - 1].content}</label>
-                               </div>
-                           </div>
-                       </Grid.Column>
+                    {taskColumn(tasks[length - 2])}
+                    {taskColumn(tasks[length - 1])}
                    </Grid.Row>
                )
                taskRows.push(taskRow);

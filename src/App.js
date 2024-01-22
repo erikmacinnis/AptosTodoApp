@@ -56,7 +56,7 @@ const App = () => {
             {account && <DisplayTasks account={account} resetTasks={resetTasks} count={count} completed={completed} setCompleted={setCompleted}/>}
             {account && <CreateTask resetTasks={resetTasks} setResetTasks={setResetTasks} setCount={setCount} count={count}/>}
             <br></br>
-            <DropDownList completed={completed} />
+            <DropDownList completed={completed.reverse()} />
         </div>
     )
 }
