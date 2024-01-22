@@ -40,7 +40,7 @@ const CreateTask = ({setCount, count, setResetTasks, resetTasks}) => {
     }
 
     return (
-        <Form className="createTask">
+        <Form className="createTask" style={{margin: '30px'}}>
             <Form.Field>
                 <label style={{fontSize: "15px", Color: "#181818"}}>Create a Task</label>
                 <input 
@@ -53,7 +53,6 @@ const CreateTask = ({setCount, count, setResetTasks, resetTasks}) => {
             type='submit'
             onClick={(event) => createTask(event)}
             >Create</Button>
-            <h5>A task may take up to 30 seconds to be added or removed</h5>
         </Form>
     )
 }

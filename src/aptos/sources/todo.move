@@ -1,4 +1,4 @@
-module 0xe84f70f5bc7be9ced87eff4e346d4b0b641a3963da5d8be7739a008ebbeab89b::Todo {
+module todo_addr::Todo {
     // 0x1 is the standard library address for these basic types
     use std::string;
     use std::signer;

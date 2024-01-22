@@ -17,10 +17,8 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
     },[resetTasks])
 
     useEffect( () => {
-        if (tasks[0].id === 1){
-            createFormattedTaskList();
-            setLoading(false);
-        }
+        createFormattedTaskList();
+        setLoading(false);
     }, [tasks])
 
     const checkTask = async(id) => {
@@ -28,7 +26,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                 data : {
                     function:`${window.env.MODULE_ADDR}::Todo::check_task`,
                     functionArguments:[
-                        id,
+                        id - 1,
                     ]
                 }
             }
@@ -36,6 +34,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                 const response = await signAndSubmitTransaction(transaction);
                 await aptos.waitForTransaction({transactionHash:response.hash});
             } catch(err) {
+                document.getElementById(id.toString()).checked = false;
                 setLoading(false);
             }
         }
@@ -47,8 +46,6 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         // Used in CreateTask component
         const completedTasks = [];
         // This is just a dummy object
-        initialTasks.push({id: 1});
-        const counter = parseInt(count) + 1;
         const todo = await aptos.getAccountResource(
             {
                 accountAddress:account?.address,
@@ -56,10 +53,9 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
             }
         );
 
-        const tasks = todo.tasks
-        let i;
-        for (i = 1; i < counter; i++){
-            const task = tasks[i]
+        console.log(todo)
+
+        for (let task of todo.tasks){
             if (!task.completed){
                 initialTasks.push(task); 
             } else {
@@ -89,11 +85,12 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
             let taskRow = (
                 <Grid.Row key={i / 3}>
                     <Grid.Column textAlign='center'>
-                        <div id={tasks[i-2].id} className="ui left floated compact segment">
-                            <div style={{width: "auto"}} className="ui toggle checked checkbox">
+                        <div style={{width: "100%"}} className="ui left floated compact segment">
+                            <div className="ui toggle checked checkbox">
                                 <input
                                 type="checkbox"
-                                name={tasks[i-2].id}
+                                id={tasks[i-2].id.toString()}
+                                name={tasks[i-2].id.toString()}
                                 onClick={(event) => checkTask(event.target.name)}
                                 ></input>
                                 <label>{tasks[i-2].content}</label>
@@ -101,11 +98,12 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                         </div>
                     </Grid.Column>
                     <Grid.Column key={i-1} textAlign='center'>
-                        <div id={tasks[i-1].id} style={{width: "100%"}} className="ui left floated compact segment">
+                        <div style={{width: "100%"}} className="ui left floated compact segment">
                             <div  className="ui toggle checked checkbox">
                                 <input
                                 type="checkbox"
-                                name={tasks[i-1].id}
+                                id={tasks[i-1].id.toString()}
+                                name={tasks[i-1].id.toString()}
                                 onClick={(event) => checkTask(event.target.name)}
                                 ></input>
                                 <label>{tasks[i-1].content}</label>
@@ -113,11 +111,12 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                         </div>
                     </Grid.Column>
                     <Grid.Column key={i} textAlign='center'>
-                        <div id={tasks[i].id} className="ui left floated compact segment">
+                        <div style={{width: "100%"}} className="ui left floated compact segment">
                             <div className="ui toggle checked checkbox">
                                 <input
                                 type="checkbox"
-                                name={tasks[i].id}
+                                id={tasks[i].id.toString()}
+                                name={tasks[i].id.toString()}
                                 onClick={(event) => checkTask(event.target.name)}
                                 ></input>
                                 <label>{tasks[i].content}</label>
@@ -133,7 +132,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                 let taskRow = (
                    <Grid.Row key={i / 3}>
                        <Grid.Column key={length - 1}textAlign='center'>
-                           <div className="ui left floated compact segment">
+                           <div style={{width: "100%"}} className="ui left floated compact segment">
                                <div className="ui toggle checked checkbox">
                                    <input
                                    type="checkbox"
@@ -153,7 +152,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                 let taskRow = (
                    <Grid.Row key={i / 3}>
                        <Grid.Column key={length-2} textAlign='center'>
-                           <div className="ui left floated compact segment">
+                           <div style={{width: "100%"}} className="ui left floated compact segment">
                                <div className="ui toggle checked checkbox">
                                    <input
                                    type="checkbox"
@@ -165,7 +164,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                            </div>
                        </Grid.Column>
                        <Grid.Column key={length-1} textAlign='center'>
-                           <div className="ui left floated compact segment">
+                           <div style={{width: "100%"}} className="ui left floated compact segment">
                                <div className="ui toggle checked checkbox">
                                    <input
                                    type="checkbox"
@@ -192,6 +191,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         );
     }
     else {
+        console.log(tasks)
         return (
             <div className="ddl">
                 <h1 
@@ -199,7 +199,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                     {`You Have ${tasks.length - 1} Active Tasks`}
                 </h1>
                 <br/>
-                <Grid columns={3} divided>
+                <Grid style={{margin: '20px'}} columns={3} divided>
                     {tasksFormatted}
                 </Grid>
             </div>

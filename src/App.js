@@ -4,7 +4,6 @@ import './init.js'
 import DropDownList from './components/DropDown.js';
 import DisplayTasks from './components/DisplayTasks';
 import CreateTask from './components/CreateTask.js';
-import Loader from './components/Loader'
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 import { Layout, Row, Col } from "antd";
@@ -43,7 +42,7 @@ const App = () => {
 
     return (
         <div className="ui container">
-            <Layout>
+            <Layout style={{ margin: '20px', backgroundColor: 'white'}}>
               <Row align="middle">
                 <Col span={10} offset={2}>
                   <h1>Aptos Todo List</h1>
