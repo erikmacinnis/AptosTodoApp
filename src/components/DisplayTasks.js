@@ -7,7 +7,7 @@ import {useWallet} from "@aptos-labs/wallet-adapter-react";
 const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
     
     const { signAndSubmitTransaction } = useWallet();
-    const [tasks, setTasks] = useState([{id: 0}]);
+    const [tasks, setTasks] = useState([]);
     const [tasksFormatted, setTasksFormatted] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -22,25 +22,23 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
     }, [tasks])
 
     const checkTask = async(id) => {
-            const transaction = {
-                data : {
-                    function:`${window.env.MODULE_ADDR}::Todo::check_task`,
-                    functionArguments:[
-                        id - 1,
-                    ]
-                }
-            }
-            try {
-                const response = await signAndSubmitTransaction(transaction);
-                await aptos.waitForTransaction({transactionHash:response.hash});
-                createFormattedTaskList();
-                setLoading(false);
-            } catch(err) {
-                document.getElementById(id.toString()).checked = false;
-                createFormattedTaskList();
-                setLoading(false);
+        const transaction = {
+            data : {
+                function:`${window.env.MODULE_ADDR}::Todo::check_task`,
+                functionArguments:[
+                    id - 1,
+                ]
             }
         }
+        try {
+            const response = await signAndSubmitTransaction(transaction);
+            await aptos.waitForTransaction({transactionHash:response.hash});
+        } catch(err) {
+            document.getElementById(id.toString()).checked = false;
+        }
+        createFormattedTaskList();
+        setLoading(false);
+    }
 
     const createTaskList = async () => {
         // Creates the list for the incompleted tasks
@@ -56,9 +54,8 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
             }
         );
 
-        console.log(todo)
-
         for (let task of todo.tasks){
+            console.log('skkk', task)
             if (!task.completed){
                 initialTasks.push(task); 
             } else {
@@ -106,40 +103,44 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
     const createFormattedTaskList = () => {
 
         const length = tasks.length;
-        // This is represents the tasks of the leftover incompleted row
-        const mod = (length - 1) % 3;
-        const taskRows = [];
-        let i;
-        for (i = 3; i < length; i += 3){
-            let taskRow = (
-                <Grid.Row key={i / 3}>
-                    {taskColumn(tasks[i-2])}
-                    {taskColumn(tasks[i-1])}
-                    {taskColumn(tasks[i])}
-                </Grid.Row>
-               )
-            taskRows.push(taskRow);
-       }
-       if (mod !== 0){
-           if (mod === 1){
+        console.log('skkkk', tasks)
+        if (length != 0) {
+            console.log('asdfasdf')
+            // This is represents the tasks of the leftover incompleted row
+            const mod = (length) % 3;
+            const taskRows = [];
+            let i;
+            for (i = 3; i < length; i += 3){
                 let taskRow = (
-                   <Grid.Row key={i / 3}>
-                    {taskColumn(tasks[length - 1])}
-                   </Grid.Row>
-               )
-               taskRows.push(taskRow);
-           }
-           else {
-                let taskRow = (
-                   <Grid.Row key={i / 3}>
-                    {taskColumn(tasks[length - 2])}
-                    {taskColumn(tasks[length - 1])}
-                   </Grid.Row>
-               )
-               taskRows.push(taskRow);
-           }
-       }
-       setTasksFormatted(taskRows);
+                    <Grid.Row key={i / 3}>
+                        {taskColumn(tasks[i-2])}
+                        {taskColumn(tasks[i-1])}
+                        {taskColumn(tasks[i])}
+                    </Grid.Row>
+                    )       
+                taskRows.push(taskRow);
+            }
+            if (mod !== 0){
+                if (mod === 1){
+                    let taskRow = (
+                        <Grid.Row key={i / 3}>
+                            {taskColumn(tasks[length - 1])}
+                        </Grid.Row>
+                    )
+                    taskRows.push(taskRow);
+                }
+                else {
+                    let taskRow = (
+                        <Grid.Row key={i / 3}>
+                            {taskColumn(tasks[length - 2])}
+                            {taskColumn(tasks[length - 1])}
+                        </Grid.Row>
+                    )
+                    taskRows.push(taskRow);
+                }
+            }
+            setTasksFormatted(taskRows);
+        }
     }
 
     if (loading){

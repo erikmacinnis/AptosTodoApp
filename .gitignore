@@ -11,6 +11,8 @@
 # production
 build
 
+.aptos
+
 .env
 env.js
 
