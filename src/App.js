@@ -5,14 +5,15 @@ import DropDownList from './components/DropDown.js';
 import DisplayTasks from './components/DisplayTasks';
 import CreateTask from './components/CreateTask.js';
 import Leaderboard from './components/Leaderboard.js';
+import CustomLoader from './components/Loader.js';
 import { Button } from 'semantic-ui-react';
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 import { Layout, Row, Col } from "antd";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import aptos from './aptos'
-import DedicatedWorkerClass from './workers/DedicatedWorker.js';
-import {ACTIONS} from './workers/constants.js'
+import myWorker from './workers/myWorker.worker.js'
+import WorkerFactory from './workers/WorkerFactory.js'
 
 const App = () => {
 
@@ -22,36 +23,23 @@ const App = () => {
   const [count, setCount] = useState(0);
   const [completed, setCompleted] = useState([]);
   const [resetTasks, setResetTasks] = useState(false);
-  const [users, setUsers] = useState(null);
-  const [leaderboardWorker, setLeaderboardWorker] = useState(null);
-  const [isWebSocketActiveInWorker, setWebSocketStatus] = useState(false);
+  const [worker, setWorker] = useState(null);
 
-  const workerOnMessageHandler = (workerData) => {
-    switch(workerData.action) {
-      case ACTIONS.WEB_SOCKET_ONOPEN:
-        setWebSocketStatus(true);
-        console.log('Web socket successfully opened');
-        break;
-      case ACTIONS.LEADERBOARD_DATA_RECEIVED:
-        console.log('New order table data received', workerData.data);
-        break;
+  const createWorker = () => {
+    const workerInstance = new WorkerFactory(myWorker);
+    setWorker(workerInstance);
+    workerInstance.postMessage({
+      data: 'ws://localhost:8090'
+    });
+
+    workerInstance.onmessage = (res) => {
+      console.log('onMessage')
+      console.log(res)
     }
   }
 
-  const createWorker = () => {
-    const worker = new DedicatedWorkerClass({
-      func: workerOnMessageHandler,
-      ctx: this
-    });
-    setLeaderboardWorker(worker);
-    worker.postMessage({
-      action: ACTIONS.LEADERBOARD_INIT
-    });
-  }
-
   const closeWorker = () => {
-    leaderboardWorker.terminate();
-    setWebSocketStatus(false);
+    worker.terminate();
   }
 
   useEffect(() => {
@@ -67,51 +55,6 @@ const App = () => {
   useEffect(() => {
     initialFunction();
   })
-
-  useEffect(() => {
-    try {
-      // fetchingLeaderboardUsers()
-
-    } catch (err) {
-      console.error(err)
-    }
-  }, []);
-
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // webWorker.postMessage({ users, type: ""});
-  //       webWorker.addEventListener('message', (event) => {
-  //           const leaderboard = event.data;
-  //           setUsers(leaderboard); 
-  // });
-
-
-
-  // async function fetchingLeaderboardUsers() {
-  //   while (true) {
-  //     try {
-  //       const response = await axios.get('http://localhost:3030/leaderboardData');
-  //       // console.log('response', response)
-  //       const leaderboard = response.data;
-  //       if (leaderboard != []) {
-  //         console.log(leaderboard)
-  //         if (leaderboard != users) {
-  //           console.log('users', users)
-  //           setUsers(leaderboard)
-  //           console.log('leaderboard', leaderboard)
-  //         }
-  //       }
-  //       await sleep(5000)
-  //     } catch (err) {
-  //       if (err.code != 'ERR_BAD_REQUEST') {
-  //         console.error(err)
-  //       }
-  //       await sleep(5000)
-  //     }
-  //   }
-  // }
 
   async function initialFunction() {
     if (account != null) {
@@ -155,6 +98,10 @@ const App = () => {
 
   return (
       <div className="ui container">
+        {loading ? (
+          <CustomLoader />
+          ) : (
+            <>
           <Layout style={{ margin: '20px', backgroundColor: 'white'}}>
             <Row align="middle">
               <Col span={10} offset={2}>
@@ -178,6 +125,8 @@ const App = () => {
           <br></br>
           {!newUser && <DropDownList completed={completed.reverse()} />}
           {<Leaderboard/>}
+          </>
+          )}
       </div>
   )
 }
