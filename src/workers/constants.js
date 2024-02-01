@@ -1,0 +1,12 @@
+const ACTIONS = {
+	WEB_SOCKET_ONOPEN: 0,
+	LEADERBOARD_DATA_RECEIVED: 1,
+    LEADERBOARD_INIT: 2,
+}
+
+const ACTION_STATUS = {
+    SUCCESS: 0,
+    FAILURE: 1,
+}
+
+module.exports = {ACTIONS, ACTION_STATUS}
