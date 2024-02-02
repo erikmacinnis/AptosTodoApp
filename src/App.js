@@ -24,23 +24,25 @@ const App = () => {
   const [completed, setCompleted] = useState([]);
   const [resetTasks, setResetTasks] = useState(false);
   const [worker, setWorker] = useState(null);
+  const [leaderboard, setNewLeaderboard] = useState([])
 
   const createWorker = () => {
     const workerInstance = new WorkerFactory(myWorker);
     setWorker(workerInstance);
     workerInstance.postMessage({
-      data: 'ws://localhost:8090'
+      url: window.env.BACKEND_ADDR,
     });
 
     workerInstance.onmessage = (res) => {
-      console.log('onMessage')
-      console.log(res)
+      setNewLeaderboard(JSON.parse(res.data))
     }
   }
 
   const closeWorker = () => {
-    worker.terminate();
+    // worker.terminate(); 
+    // This is causing an error. Seems like it is not defined
   }
+
 
   useEffect(() => {
     createWorker();
@@ -124,7 +126,7 @@ const App = () => {
           {!newUser && account && <CreateTask resetTasks={resetTasks} setResetTasks={setResetTasks} setCount={setCount} count={count}/>}
           <br></br>
           {!newUser && <DropDownList completed={completed.reverse()} />}
-          {<Leaderboard/>}
+          {<Leaderboard leaderboard={leaderboard} />}
           </>
           )}
       </div>

@@ -1,16 +1,19 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-const Leaderboard = ({users}) => {
+const Leaderboard = ({leaderboard}) => {
 
-    const leaderboardRow = ({ users }) => {
+    const leaderboardRow = () => {
         return (
             <tbody>
-                {users.map((user, index) => (
+                {leaderboard.map((user, index) => {
+                    console.log(user)
+                return (
                     <tr key={index}>
                         <td data-label="Address">{user.address}</td>
-                        <td data-label="Value">{user.value}</td>
+                        <td data-label="Value">{user.numCompleteTodos}</td>
                     </tr>
-                ))}
+                )  
+                } )}
             </tbody>
         );
     };
@@ -25,7 +28,7 @@ const Leaderboard = ({users}) => {
                             <th>CompletedTodos</th>
                         </tr>
                     </thead>
-                    {/* {leaderboardRow(users)} */}
+                    {leaderboard.length > 0 && leaderboardRow()}
                 </table>
             </div>
         </>
