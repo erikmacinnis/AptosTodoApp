@@ -55,7 +55,6 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         );
 
         for (let task of todo.tasks){
-            console.log('skkk', task)
             if (!task.completed){
                 initialTasks.push(task); 
             } else {
@@ -103,9 +102,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
     const createFormattedTaskList = () => {
 
         const length = tasks.length;
-        console.log('skkkk', tasks)
         if (length != 0) {
-            console.log('asdfasdf')
             // This is represents the tasks of the leftover incompleted row
             const mod = (length) % 3;
             const taskRows = [];
@@ -151,12 +148,11 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         );
     }
     else {
-        console.log(tasks)
         return (
             <div className="ddl">
                 <h1 
                 style={{textAlign: "center", color: "#181818"}}>
-                    {`You Have ${tasks.length - 1} Active Tasks`}
+                    {`You Have ${tasks.length} Active Tasks`}
                 </h1>
                 <br/>
                 <Grid style={{margin: '20px'}} columns={3} divided>

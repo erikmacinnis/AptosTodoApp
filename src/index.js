@@ -6,6 +6,7 @@ import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 
 const wallets = [new PetraWallet()];
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>

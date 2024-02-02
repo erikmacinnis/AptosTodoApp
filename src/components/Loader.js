@@ -1,7 +1,7 @@
 import React from 'react'
 import { Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
 
-const LoaderExampleText = () => (
+const CustomLoader = () => (
   <div className='loader'>
     <Segment>
       <Dimmer active>
@@ -13,4 +13,4 @@ const LoaderExampleText = () => (
   </div>
 )
 
-export default LoaderExampleText
+export default CustomLoader
