@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Grid } from 'semantic-ui-react';
-import Loader from './InlineLoader';
 import aptos from '../aptos'
 import {useWallet} from "@aptos-labs/wallet-adapter-react";
+import mintAndTransfer from '../AptosFunctions.js'
 
 const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}) => {
     
-    const { signAndSubmitTransaction } = useWallet();
+    const { account, signAndSubmitTransaction } = useWallet();
     const [tasks, setTasks] = useState([]);
     const [tasksFormatted, setTasksFormatted] = useState([]);
 
@@ -19,7 +19,7 @@ const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}
     }, [tasks])
 
     const checkTask = async(task) => {
-        const transaction = {
+        const checkTaskTx = {
             data : {
                 function:`${window.env.MODULE_ADDR}::Todo::check_task`,
                 functionArguments:[
@@ -28,7 +28,9 @@ const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}
             }
         }
         try {
-            const response = await signAndSubmitTransaction(transaction);
+            const response = await signAndSubmitTransaction(checkTaskTx);
+            const userAddr = account.address
+            await mintAndTransfer(userAddr)
             await aptos.waitForTransaction({transactionHash:response.hash});
             const newCompletedList = completed
             console.log(task)

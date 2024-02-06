@@ -81,6 +81,7 @@ const App = () => {
           setLoading(false)
       }
     }
+    setLoading(false)
   }
 
   const createTodoList = async(event) => {
