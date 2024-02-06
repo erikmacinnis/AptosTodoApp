@@ -12,7 +12,6 @@ export default () => {
         websocket = new WebSocket(url);
 
         websocket.addEventListener('message', (event) => {
-            console.log(event)
             self.postMessage(event.data) /* eslint-disable-line no-restricted-globals */
         });
 

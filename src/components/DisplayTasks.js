@@ -4,40 +4,45 @@ import Loader from './InlineLoader';
 import aptos from '../aptos'
 import {useWallet} from "@aptos-labs/wallet-adapter-react";
 
-const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
+const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}) => {
     
     const { signAndSubmitTransaction } = useWallet();
     const [tasks, setTasks] = useState([]);
     const [tasksFormatted, setTasksFormatted] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect( () => {
-        setLoading(true);
         createTaskList();
-    },[resetTasks])
+    },[todo])
 
     useEffect( () => {
         createFormattedTaskList();
-        setLoading(false);
     }, [tasks])
 
-    const checkTask = async(id) => {
+    const checkTask = async(task) => {
         const transaction = {
             data : {
                 function:`${window.env.MODULE_ADDR}::Todo::check_task`,
                 functionArguments:[
-                    id - 1,
+                    task.id - 1,
                 ]
             }
         }
         try {
             const response = await signAndSubmitTransaction(transaction);
             await aptos.waitForTransaction({transactionHash:response.hash});
+            const newCompletedList = completed
+            console.log(task)
+            newCompletedList.push({
+                key: task.id,
+                text: task.content,
+                value: task.content,
+                image: {avatar: true, src: '/images/checkmark.png'}
+            })
+            setCompleted(newCompletedList)
+            setResetTasks(!resetTasks)
         } catch(err) {
-            document.getElementById(id.toString()).checked = false;
+            document.getElementById(task.id.toString()).checked = false;
         }
-        createFormattedTaskList();
-        setLoading(false);
     }
 
     const createTaskList = async () => {
@@ -47,29 +52,25 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         // Used in CreateTask component
         const completedTasks = [];
         // This is just a dummy object
-        const todo = await aptos.getAccountResource(
-            {
-                accountAddress:account?.address,
-                resourceType:`${window.env.MODULE_ADDR}::Todo::Todo`
-            }
-        );
 
-        for (let task of todo.tasks){
-            if (!task.completed){
-                initialTasks.push(task); 
-            } else {
-                completedTasks.push(
-                    {
-                        key: task.id,
-                        text: task.content,
-                        value: task.content,
-                        image: {avatar: true, src: '/images/checkmark.png'}
-                    }
-                );
-            }        
+        if (todo != null) {
+            for (let task of todo.tasks){
+                if (!task.completed){
+                    initialTasks.push(task); 
+                } else {
+                    completedTasks.push(
+                        {
+                            key: task.id,
+                            text: task.content,
+                            value: task.content,
+                            image: {avatar: true, src: '/images/checkmark.png'}
+                        }
+                    );
+                }        
+            }
+            setCompleted(completedTasks);
+            setTasks(initialTasks);
         }
-        setCompleted(completedTasks);
-        setTasks(initialTasks);
     }
 
     const taskColumn = (task) => {
@@ -86,7 +87,7 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                     name={task.id.toString()}
                     onClick={(event) => {
                         if (event.target.checked) {
-                            checkTask(event.target.name)
+                            checkTask(task)
                         } else {
                             event.target.checked = true
                         }
@@ -140,14 +141,6 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
         }
     }
 
-    if (loading){
-        return (
-            <div className="loading">
-                <Loader/>
-            </div>
-        );
-    }
-    else {
         return (
             <div className="ddl">
                 <h1 
@@ -160,7 +153,6 @@ const DisplayTasks = ({account, count, setCompleted, resetTasks}) => {
                 </Grid>
             </div>
         );
-    }
 }
 
 

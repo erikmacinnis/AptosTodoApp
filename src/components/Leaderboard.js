@@ -6,7 +6,6 @@ const Leaderboard = ({leaderboard}) => {
         return (
             <tbody>
                 {leaderboard.map((user, index) => {
-                    console.log(user)
                 return (
                     <tr key={index}>
                         <td data-label="Address">{user.address}</td>

@@ -21,6 +21,7 @@ module todo_addr::Todo {
     struct Todo has key {
         count: u64,
         tasks: vector<Task>,
+        numCompleted: u64,
     }
     //:!:>resource
 
@@ -30,6 +31,7 @@ module todo_addr::Todo {
         move_to(account, Todo {
             count: 0,
             tasks: vector::empty(),
+            numCompleted: 0,
         });
     }
 
@@ -77,6 +79,7 @@ module todo_addr::Todo {
         let task = vector::borrow_mut<Task>(&mut todo.tasks, index);
         // Setting task to completed
         task.completed = true;
+        todo.numCompleted = todo.numCompleted + 1;
         event::emit(TaskCompleted {
             id: index,
             completed: task.completed,

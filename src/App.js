@@ -21,6 +21,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [newUser, setNewUser] = useState(true);
   const [count, setCount] = useState(0);
+  const [todo, setTodo] = useState(null)
   const [completed, setCompleted] = useState([]);
   const [resetTasks, setResetTasks] = useState(false);
   const [worker, setWorker] = useState(null);
@@ -56,24 +57,28 @@ const App = () => {
 
   useEffect(() => {
     initialFunction();
-  })
+  }, [account, resetTasks])
 
   async function initialFunction() {
+    // Wallet is connected
     if (account != null) {
-      try {
-        const todo = await aptos.getAccountResource(
-            {
-                accountAddress: account.address,
-                resourceType:`${window.env.MODULE_ADDR}::Todo::Todo`
-            }
-        );
-        const count = todo.count
-        setCount(count);
-        setLoading(false);
-        setNewUser(false)
-      } catch (err) {
-        console.log(err)
-        setNewUser(true)
+        try {
+          const tempTodo = await aptos.getAccountResource(
+              {
+                  accountAddress: account.address,
+                  resourceType:`${window.env.MODULE_ADDR}::Todo::Todo`
+              }
+          );
+          console.log('tempTodo', tempTodo)
+          const count = tempTodo.count
+          setTodo(tempTodo)
+          setCount(count);
+          setLoading(false);
+          setNewUser(false)
+        } catch (err) {
+          console.log(err)
+          setNewUser(true)
+          setLoading(false)
       }
     }
   }
@@ -122,11 +127,11 @@ const App = () => {
             >Create a new Todo list</Button>
           }
           
-          {!newUser && account && <DisplayTasks account={account} resetTasks={resetTasks} count={count} completed={completed} setCompleted={setCompleted}/>}
+          {!newUser && account && <DisplayTasks todo={todo} completed={completed} setCompleted={setCompleted} resetTasks={resetTasks} setResetTasks={setResetTasks}/>}
           {!newUser && account && <CreateTask resetTasks={resetTasks} setResetTasks={setResetTasks} setCount={setCount} count={count}/>}
           <br></br>
           {!newUser && <DropDownList completed={completed.reverse()} />}
-          {<Leaderboard leaderboard={leaderboard} />}
+          {!newUser && <Leaderboard leaderboard={leaderboard} />}
           </>
           )}
       </div>
