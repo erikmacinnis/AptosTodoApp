@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 import './init.js'
 import DropDownList from './components/DropDown.js';
+import NftsCollection from './components/NftsCollection';
 import DisplayTasks from './components/DisplayTasks';
 import CreateTask from './components/CreateTask.js';
 import Leaderboard from './components/Leaderboard.js';
@@ -14,6 +15,7 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import aptos from './aptos'
 import myWorker from './workers/myWorker.worker.js'
 import WorkerFactory from './workers/WorkerFactory.js'
+import { AccountAddress } from "@aptos-labs/ts-sdk";
 
 const App = () => {
 
@@ -26,6 +28,8 @@ const App = () => {
   const [resetTasks, setResetTasks] = useState(false);
   const [worker, setWorker] = useState(null);
   const [leaderboard, setNewLeaderboard] = useState([])
+  // Nfts belonging to the collection
+  const [nfts, setNfts] = useState([])
 
   const createWorker = () => {
     const workerInstance = new WorkerFactory(myWorker);
@@ -40,8 +44,8 @@ const App = () => {
   }
 
   const closeWorker = () => {
-    // worker.terminate(); 
     // This is causing an error. Seems like it is not defined
+    // worker.terminate(); 
   }
 
 
@@ -69,8 +73,8 @@ const App = () => {
                   resourceType:`${window.env.MODULE_ADDR}::Todo::Todo`
               }
           );
-          console.log('tempTodo', tempTodo)
           const count = tempTodo.count
+          getCollectionAssets()
           setTodo(tempTodo)
           setCount(count);
           setLoading(false);
@@ -82,6 +86,39 @@ const App = () => {
       }
     }
     setLoading(false)
+  }
+
+  async function getCollectionAssets() {
+    const accountAddr = AccountAddress.fromStringStrict(account.address)
+    const digitalAssets = await aptos.getAccountOwnedTokens({
+      accountAddress: accountAddr,
+    });
+    const collectionId = window.env.COLLECTION_ID
+    const collectionNfts = []
+    for (const asset of digitalAssets) {
+      if (asset.current_token_data.collection_id == collectionId) {
+        asset.uriData = await getDataFromUri(asset.current_token_data.token_uri)
+        collectionNfts.push(asset)
+      }
+    }
+    setNfts(collectionNfts)
+  }
+
+  async function getDataFromUri(url) {
+    try {
+      const response = await fetch(url);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      // Assuming the response data is a JSON object
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching data: ${error.message}`);
+      throw error; // You can handle the error in the calling code as needed
+    }
   }
 
   const createTodoList = async(event) => {
@@ -133,6 +170,7 @@ const App = () => {
           <br></br>
           {!newUser && <DropDownList completed={completed.reverse()} />}
           {!newUser && <Leaderboard leaderboard={leaderboard} />}
+          {nfts && <NftsCollection nfts={nfts} />}
           </>
           )}
       </div>

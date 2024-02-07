@@ -70,6 +70,7 @@ async function transferLatestNft(address) {
         accountAddress: account.accountAddress,
     });
 
+    // Transfer the latest digital asset to the address
     const transferTransaction = await aptos.transferDigitalAssetTransaction({
         sender: account,
         digitalAssetAddress: digitalAssets[digitalAssets.length - 1].token_data_id,

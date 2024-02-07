@@ -143,18 +143,18 @@ const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}
         }
     }
 
-        return (
-            <div className="ddl">
-                <h1 
-                style={{textAlign: "center", color: "#181818"}}>
-                    {`You Have ${tasks.length} Active Tasks`}
-                </h1>
-                <br/>
-                <Grid style={{margin: '20px'}} columns={3} divided>
-                    {tasksFormatted}
-                </Grid>
-            </div>
-        );
+    return (
+        <div className="ddl">
+            <h1 
+            style={{textAlign: "center", color: "#181818"}}>
+                {`You Have ${tasks.length} Active Tasks`}
+            </h1>
+            <br/>
+            <Grid style={{margin: '20px'}} columns={3} divided>
+                {tasksFormatted}
+            </Grid>
+        </div>
+    );
 }
 
 
