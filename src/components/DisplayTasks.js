@@ -106,7 +106,7 @@ const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}
 
         const length = tasks.length;
         if (length != 0) {
-            // This is represents the tasks of the leftover incompleted row
+            // This is represents the tasks of the leftover incomplete row
             const mod = (length) % 3;
             const taskRows = [];
             let i;
@@ -140,6 +140,8 @@ const DisplayTasks = ({todo, completed, setCompleted, resetTasks, setResetTasks}
                 }
             }
             setTasksFormatted(taskRows);
+        } else {
+            setTasksFormatted(null)
         }
     }
 

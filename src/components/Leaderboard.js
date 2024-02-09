@@ -20,6 +20,7 @@ const Leaderboard = ({leaderboard}) => {
     return (
         <>
             <div style={{ margin: '100px' }}>
+                <h2>Leaderboard</h2>
                 <table className="ui celled table">
                     <thead>
                         <tr>

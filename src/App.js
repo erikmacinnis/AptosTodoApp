@@ -83,6 +83,7 @@ const App = () => {
           console.log(err)
           setNewUser(true)
           setLoading(false)
+          setNfts([])
       }
     }
     setLoading(false)
@@ -170,7 +171,7 @@ const App = () => {
           <br></br>
           {!newUser && <DropDownList completed={completed.reverse()} />}
           {!newUser && <Leaderboard leaderboard={leaderboard} />}
-          {nfts && <NftsCollection nfts={nfts} />}
+          {nfts.length != 0 && <NftsCollection nfts={nfts} />}
           </>
           )}
       </div>
